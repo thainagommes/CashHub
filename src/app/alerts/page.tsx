@@ -8,10 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { AlertCircle, Bell, CheckCircle, Plus, Sparkles } from 'lucide-react';
+import AlertModal from '../../../components/AlertModal';
+import { Alert } from '../../../lib/types';
 
 export default function AlertsPage() {
   const [alerts, setAlerts] = useAlerts();
   const [transactions] = useTransactions();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const upcomingBills = getUpcomingBills(transactions);
 
@@ -22,7 +25,17 @@ export default function AlertsPage() {
   };
 
   const handleDeleteAlert = (id: string) => {
-    setAlerts(alerts.filter(alert => alert.id !== id));
+    if (confirm('Tem certeza que deseja excluir este alerta?')) {
+      setAlerts(alerts.filter(alert => alert.id !== id));
+    }
+  };
+
+  const handleSaveAlert = (alertData: Omit<Alert, 'id'>) => {
+    const newAlert: Alert = {
+      ...alertData,
+      id: Date.now().toString(),
+    };
+    setAlerts([...alerts, newAlert]);
   };
 
   return (
@@ -38,7 +51,10 @@ export default function AlertsPage() {
               </h1>
               <p className="text-gray-600 mt-2 text-sm sm:text-base">Fique atento às suas contas e notificações</p>
             </div>
-            <Button className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               <Plus className="w-4 h-4" />
               Novo Alerta
             </Button>
@@ -131,6 +147,13 @@ export default function AlertsPage() {
           </Card>
         </div>
       </main>
+
+      {/* Modal de Alerta */}
+      <AlertModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveAlert}
+      />
     </div>
   );
 }

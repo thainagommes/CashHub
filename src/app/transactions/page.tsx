@@ -9,6 +9,8 @@ import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
 import { Search, Filter, Plus, Edit, Trash2, Sparkles, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import TransactionModal from '../../../components/TransactionModal';
+import { Transaction } from '../../../lib/types';
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useTransactions();
@@ -16,6 +18,8 @@ export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
 
   const filteredTransactions = transactions.filter(transaction => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -25,13 +29,43 @@ export default function TransactionsPage() {
   });
 
   const handleDeleteTransaction = (id: string) => {
-    setTransactions(transactions.filter(t => t.id !== id));
+    if (confirm('Tem certeza que deseja excluir esta transação?')) {
+      setTransactions(transactions.filter(t => t.id !== id));
+    }
   };
 
   const handleClearFilters = () => {
     setSearchTerm('');
     setFilterType('all');
     setFilterCategory('all');
+  };
+
+  const handleOpenModal = (transaction?: Transaction) => {
+    setEditingTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingTransaction(undefined);
+  };
+
+  const handleSaveTransaction = (transactionData: Omit<Transaction, 'id'>) => {
+    if (editingTransaction) {
+      // Editar transação existente
+      setTransactions(
+        transactions.map((t) =>
+          t.id === editingTransaction.id ? { ...transactionData, id: t.id } : t
+        )
+      );
+    } else {
+      // Criar nova transação
+      const newTransaction: Transaction = {
+        ...transactionData,
+        id: Date.now().toString(),
+      };
+      setTransactions([...transactions, newTransaction]);
+    }
   };
 
   return (
@@ -47,7 +81,10 @@ export default function TransactionsPage() {
               </h1>
               <p className="text-gray-600 mt-2 text-sm sm:text-base">Gerencie todas as suas movimentações financeiras</p>
             </div>
-            <Button className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               <Plus className="w-4 h-4" />
               Nova Transação
             </Button>
@@ -138,10 +175,20 @@ export default function TransactionsPage() {
                             {transaction.type === 'income' ? '+' : '-'}R$ {transaction.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </Badge>
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenModal(transaction)}
+                              className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
+                            >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleDeleteTransaction(transaction.id)} className="hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteTransaction(transaction.id)}
+                              className="hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -163,6 +210,15 @@ export default function TransactionsPage() {
           </Card>
         </div>
       </main>
+
+      {/* Modal de Transação */}
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveTransaction}
+        transaction={editingTransaction}
+        categories={categories}
+      />
     </div>
   );
 }

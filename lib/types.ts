@@ -12,6 +12,7 @@ export interface Transaction {
   categoryId: string;
   date: string; // ISO string
   type: 'income' | 'expense';
+  isRecurring?: boolean;
   dueDate?: string; // for bills
 }
 
@@ -25,7 +26,7 @@ export interface Goal {
 
 export interface Alert {
   id: string;
-  type: 'bill' | 'goal';
+  type?: 'bill' | 'goal' | 'custom';
   message: string;
   date: string;
   read?: boolean;
