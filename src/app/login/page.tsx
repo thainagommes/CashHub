@@ -35,7 +35,7 @@ export default function LoginPage() {
             <DollarSign className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
-            💰 CashHub 💵
+            CashHub
             <Sparkles className="w-6 h-6 text-indigo-600" />
           </h1>
           <p className="text-gray-600 mt-3 text-sm">Controle financeiro inteligente para pequenas empresas</p>
