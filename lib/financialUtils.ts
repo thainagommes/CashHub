@@ -42,15 +42,12 @@ export function getMonthlyData(transactions: Transaction[]) {
 
 export function getUpcomingBills(transactions: Transaction[]): Transaction[] {
   const now = new Date();
-  now.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas o dia
-
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return transactions
     .filter(t => t.type === 'expense' && t.dueDate)
     .filter(t => {
       const dueDate = new Date(t.dueDate!);
-      dueDate.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas o dia
       return dueDate >= now && dueDate <= nextWeek;
     })
     .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());

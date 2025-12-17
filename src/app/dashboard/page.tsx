@@ -7,18 +7,14 @@ import { calculateTotal, getMonthlyData, getUpcomingBills } from '../../../lib/f
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
-import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Target, Download, Sparkles, ArrowUpRight, ArrowDownRight, Calendar, PieChart, Plus, Edit } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Target, Download, Sparkles, ArrowUpRight, ArrowDownRight, Calendar, PieChart } from 'lucide-react';
 import { exportTransactionsToCSV } from '../../../lib/csvExport';
-import GoalModal from '../../../components/GoalModal';
-import { Goal } from '../../../lib/types';
 
 export default function Dashboard() {
   const [transactions] = useTransactions();
   const [categories] = useCategories();
-  const [goals, setGoals] = useGoals();
+  const [goals] = useGoals();
   const [alerts] = useAlerts();
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [editingGoal, setEditingGoal] = useState<Goal | undefined>(undefined);
 
   const totalIncome = calculateTotal(transactions, 'income');
   const totalExpense = calculateTotal(transactions, 'expense');
@@ -53,32 +49,6 @@ export default function Dashboard() {
 
   const handleExport = () => {
     exportTransactionsToCSV(transactions, categories);
-  };
-
-  const handleOpenGoalModal = (goal?: Goal) => {
-    setEditingGoal(goal);
-    setIsGoalModalOpen(true);
-  };
-
-  const handleCloseGoalModal = () => {
-    setIsGoalModalOpen(false);
-    setEditingGoal(undefined);
-  };
-
-  const handleSaveGoal = (goalData: Omit<Goal, 'id'>) => {
-    if (editingGoal) {
-      setGoals(
-        goals.map((g) =>
-          g.id === editingGoal.id ? { ...goalData, id: g.id } : g
-        )
-      );
-    } else {
-      const newGoal: Goal = {
-        ...goalData,
-        id: Date.now().toString(),
-      };
-      setGoals([...goals, newGoal]);
-    }
   };
 
   return (
@@ -238,20 +208,11 @@ export default function Dashboard() {
             {/* Metas Financeiras */}
             <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between text-lg sm:text-xl">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
-                      <Target className="w-5 h-5 text-white" />
-                    </div>
-                    Metas Financeiras
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                    <Target className="w-5 h-5 text-white" />
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={() => handleOpenGoalModal()}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  Metas Financeiras
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -263,19 +224,9 @@ export default function Dashboard() {
                         <div key={goal.id} className="space-y-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-900 text-sm sm:text-base">{goal.name}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs sm:text-sm font-medium text-blue-600 bg-blue-100 px-2 sm:px-3 py-1 rounded-full">
-                                {progress.toFixed(1)}%
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleOpenGoalModal(goal)}
-                                className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all h-7 w-7 p-0"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            <span className="text-xs sm:text-sm font-medium text-blue-600 bg-blue-100 px-2 sm:px-3 py-1 rounded-full">
+                              {progress.toFixed(1)}%
+                            </span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                             <div
@@ -304,14 +255,6 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-
-      {/* Modal de Meta */}
-      <GoalModal
-        isOpen={isGoalModalOpen}
-        onClose={handleCloseGoalModal}
-        onSave={handleSaveGoal}
-        goal={editingGoal}
-      />
     </div>
   );
 }

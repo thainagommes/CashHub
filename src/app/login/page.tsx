@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { LogIn, Mail, Lock, DollarSign, Sparkles } from 'lucide-react';
+import { LogIn, Mail, Lock, TrendingUp, Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,10 +32,10 @@ export default function LoginPage() {
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-3xl mb-4 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
-            <DollarSign className="w-10 h-10 text-white" />
+            <TrendingUp className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
-            CashHub
+            Eco Hub
             <Sparkles className="w-6 h-6 text-indigo-600" />
           </h1>
           <p className="text-gray-600 mt-3 text-sm">Controle financeiro inteligente para pequenas empresas</p>
@@ -131,7 +131,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-sm text-gray-500 mt-8">
-          © 2024 CashHub. Todos os direitos reservados.
+          © 2024 Eco Hub. Todos os direitos reservados.
         </p>
       </div>
     </div>
